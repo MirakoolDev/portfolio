@@ -1,0 +1,12 @@
+# Node dependencies — huge, auto-generated, never back these up
+node_modules/
+admin/node_modules/
+
+# Pinegrow editor temp files
+_pgbackup/
+_pginfo/
+scratch/
+
+# OS junk
+.DS_Store
+Thumbs.db

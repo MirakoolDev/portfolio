@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="en" data-theme="dark"><head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Portfolio — Art, Design, Onchain, Experiments, Prints">
+        <title>Portfolio</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles.css?v=1778717344">
+    </head>
+    <body>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle colour mode">○</button>
+
+        <!-- MO Home Button — fixed bottom centre, every page -->
+        <a href="#main" class="mo-home" id="mo-home" aria-label="Go to homepage">MO</a>
+
+        <div id="app">
+            <!-- ══════════════════════════════
+         MAIN VIEW
+     ══════════════════════════════ -->
+            <div id="view-main" class="view" data-view="main">
+                <nav class="main-nav" aria-label="Main navigation" id="main-nav">
+                    <!-- Nav items rendered by script.js from SITE_CONFIG.navOrder -->
+                </nav>
+                <div class="main-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer" id="email-main">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-main">
+                        <!-- rendered by script.js -->
+                    </div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         ABOUT VIEW
+     ══════════════════════════════ -->
+            <div id="view-about" class="view hidden" data-view="about">
+                <div class="page-content">
+                    <div class="about-content">
+                        <p class="about-tagline">artist-technologist with a bias for atmosphere</p>
+                        <div class="about-traits"><p>interested in systems, memory, and digital intimacy</p><p>treats technology as both material and metaphor</p><p>allergic to obvious categories</p></div>
+                        <div class="about-roles"><div class="role-entry">
+  <span class="role-title">3D generalist</span>
+  <span class="role-company">Floatsanywhere</span>
+</div><div class="role-entry">
+  <span class="role-title">AR creator</span>
+  <span class="role-company">Brandstation(Redtown Digital)</span>
+</div><div class="role-entry">
+  <span class="role-title">augmented reality creator</span>
+  <span class="role-company">Meta(Flexnaija)</span>
+</div><div class="role-entry">
+  <span class="role-title">3D generalist</span>
+  <span class="role-company">Raqratt</span>
+</div><div class="role-entry">
+  <span class="role-title">AR creator</span>
+  <span class="role-company">Euphoria Labs</span>
+</div></div>
+                    </div>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-about"></div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         ART VIEW
+     ══════════════════════════════ -->
+            <div id="view-art" class="view hidden" data-view="art">
+                <div class="page-content">
+                    <div id="project-list-art" class="project-list">
+                        <div class="project-item pg-only-sample">
+                            <div class="project-header">
+                                <span class="project-title-text">sample project</span>
+                                <p class="project-description">sample description for editing in Pinegrow</p>
+                                <span class="project-toggle">+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-art"></div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         DESIGN VIEW
+     ══════════════════════════════ -->
+            <div id="view-design" class="view hidden" data-view="design">
+                <div class="page-content">
+                    <div id="project-list-design" class="project-list"></div>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-design"></div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         ONCHAIN VIEW
+     ══════════════════════════════ -->
+            <div id="view-onchain" class="view hidden" data-view="onchain">
+                <div class="page-content">
+                    <div class="onchain-links">
+                        <a href="https://foundation.app" target="_blank" rel="noopener" class="onchain-link" id="link-foundation">FOUNDATION</a>
+                        <a href="https://zora.co" target="_blank" rel="noopener" class="onchain-link" id="link-zora">ZORA</a>
+                        <a href="https://objkt.com" target="_blank" rel="noopener" class="onchain-link" id="link-objkt">OBJKT</a>
+                    </div>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-onchain"></div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         EXPERIMENTS VIEW
+     ══════════════════════════════ -->
+            <div id="view-experiments" class="view" data-view="experiments">
+                <div class="page-content">
+                    <div id="project-list-experiments" class="project-list"></div>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-experiments"></div>
+                </div>
+            </div>
+            <!-- ══════════════════════════════
+         PRINTS VIEW
+     ══════════════════════════════ -->
+            <div id="view-prints" class="view" data-view="prints">
+                <div class="page-content prints-page">
+                    <p class="coming-soon">coming soon</p>
+                </div>
+                <div class="page-footer">
+                    <a href="mailto:miracleotugo@gmail.com" class="email-footer">miracleotugo@gmail.com</a>
+                    <div class="social-links" id="social-links-prints"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Lightbox -->
+        <div id="lightbox" class="lightbox hidden" aria-hidden="true">
+            <button id="lightbox-close" class="lightbox-btn lightbox-close" aria-label="Close">✕</button>
+            <button id="lightbox-prev" class="lightbox-btn lightbox-prev" aria-label="Previous">←</button>
+            <div id="lightbox-content" class="lightbox-content"></div>
+            <button id="lightbox-next" class="lightbox-btn lightbox-next" aria-label="Next">→</button>
+            <div id="lightbox-counter" class="lightbox-counter">1 / 1</div>
+        </div>
+
+        <script src="data.js"></script>
+        <script src="script.js"></script>
+    
+</body></html>

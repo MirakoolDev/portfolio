@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--sidebar:220px;--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--text:#e8e8e8;--muted:#666;--accent:#fff;--accent-dim:#888;--danger:#e05555;--success:#4caf79;--radius:8px;--speed:0.15s}
+    html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+    /* Layout */
+    .shell{display:flex;height:100vh}
+    /* Sidebar */
+    .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 12px;gap:2px}
+    .sidebar-logo{font-size:10px;font-weight:600;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;padding:0 8px 20px}
+    .nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:9px 10px;border-radius:6px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:background var(--speed),color var(--speed);text-align:left;letter-spacing:.01em}
+    .nav-btn svg{flex-shrink:0;opacity:.6}
+    .nav-btn:hover{background:var(--surface2);color:var(--text)}
+    .nav-btn.active{background:var(--accent);color:#0f0f0f;font-weight:600}
+    .nav-btn.active svg{opacity:1}
+    .sidebar-footer{margin-top:auto;padding:12px 8px 0;border-top:1px solid var(--border)}
+    .sidebar-footer a{font-size:11px;color:var(--muted);text-decoration:none}
+    /* Content */
+    .content{flex:1;overflow-y:auto;padding:40px 48px;background:var(--bg)}
+    .panel{display:none}.panel.active{display:block}
+    /* Panel header */
+    .panel-header{margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+    .panel-header h2{font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+    .panel-header p{margin-top:4px;font-size:12px;color:var(--muted)}
+    /* Form elements */
+    label{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;margin-top:18px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:border-color var(--speed)}
+    input[type=text]:focus,input[type=email]:focus,textarea:focus,select:focus{border-color:var(--accent-dim)}
+    textarea{resize:vertical;min-height:80px}
+    select option{background:var(--surface)}
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:var(--radius);font-size:12.5px;font-weight:500;font-family:inherit;cursor:pointer;transition:opacity var(--speed),background var(--speed)}
+    .btn:hover{opacity:.85}
+    .btn-primary{background:var(--accent);color:#0f0f0f}
+    .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-sm{padding:5px 12px;font-size:11.5px}
+    .btn-icon{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:4px;font-size:14px;transition:color var(--speed)}
+    .btn-icon:hover{color:var(--danger)}
+    /* Section divider */
+    .divider{margin:28px 0;border:none;border-top:1px solid var(--border)}
+    /* Roles */
+    .role-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .role-row input{flex:1}
+    /* Tag */
+    .tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted);margin-bottom:12px}
+    /* Category tabs */
+    .cat-tabs{display:flex;gap:4px;margin-bottom:20px}
+    .cat-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;transition:all var(--speed)}
+    .cat-tab.active{background:var(--accent);color:#0f0f0f;border-color:transparent;font-weight:600}
+    /* Project cards */
+    .project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+    .project-card-header{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+    .project-card-header:hover{background:var(--surface2)}
+    .project-card-title{flex:1;font-size:13px;font-weight:500;color:var(--text)}
+    .project-card-toggle{color:var(--muted);font-size:16px;transition:transform .25s}
+    .project-card.open .project-card-toggle{transform:rotate(45deg)}
+    .project-card-body{display:none;padding:16px;border-top:1px solid var(--border)}
+    .project-card.open .project-card-body{display:block}
+    /* Media list */
+    .media-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+    .media-row{display:flex;gap:8px;align-items:center}
+    .media-row input{flex:1}
+    .media-row select{width:90px;flex-shrink:0}
+    /* Image gallery */
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:16px}
+    .gallery-item{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);aspect-ratio:1;background:var(--surface);cursor:pointer;transition:border-color var(--speed)}
+    .gallery-item:hover{border-color:var(--accent-dim)}
+    .gallery-item img,.gallery-item video{width:100%;height:100%;object-fit:cover}
+    .gallery-item .gallery-name{position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,.7);font-size:9px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gallery-item .gallery-actions{position:absolute;top:4px;right:4px;display:flex;gap:4px;opacity:0;transition:opacity var(--speed)}
+    .gallery-item:hover .gallery-actions{opacity:1}
+    .gallery-action-btn{background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:4px;padding:3px 7px;font-size:10px;cursor:pointer}
+    .gallery-action-btn:hover{background:rgba(0,0,0,.9)}
+    .gallery-empty{color:var(--muted);font-size:12px;padding:20px 0}
+    /* Upload zone */
+    .drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:36px;text-align:center;transition:border-color var(--speed);cursor:pointer}
+    .drop-zone:hover,.drop-zone.drag{border-color:var(--accent-dim)}
+    .drop-zone p{color:var(--muted);font-size:12px;margin-top:6px}
+    .drop-zone input[type=file]{display:none}
+    /* Design / Color */
+    .color-row{display:flex;align-items:center;gap:10px}
+    .color-swatch{width:34px;height:34px;border-radius:6px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;overflow:hidden;padding:0}
+    .color-swatch input[type=color]{width:150%;height:150%;transform:translate(-16%,-16%);cursor:pointer;border:none;background:none}
+    .color-row input[type=text]{flex:1}
+    /* Font preview */
+    .font-preview{margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-size:16px;color:var(--text);letter-spacing:.03em}
+    /* Range input */
+    input[type=range]{width:100%;accent-color:var(--accent);margin-top:8px}
+    .range-val{font-size:12px;color:var(--muted);margin-left:8px}
+    /* Notification */
+    #notification{position:fixed;bottom:24px;right:24px;padding:10px 20px;border-radius:var(--radius);font-size:12.5px;font-weight:500;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);display:none;transition:opacity .3s}
+    #notification.success{background:var(--success);color:#fff}
+    #notification.error{background:var(--danger);color:#fff}
+    /* Upload progress */
+    .upload-progress{display:none;margin-top:10px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+    .upload-progress-bar{height:100%;background:var(--accent);width:0;transition:width .3s}
+    /* Copy input */
+    .copy-row{display:flex;gap:8px;margin-top:8px}
+    .copy-row input{flex:1;font-family:monospace;font-size:11px}
+    /* Nav order rows */
+    .nav-order-row{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;margin-bottom:6px;cursor:grab;user-select:none;transition:background var(--speed)}
+    .nav-order-row:active{cursor:grabbing;background:var(--surface2)}
+    .nav-order-row.drag-over{border-color:var(--accent-dim)}
+    .nav-order-handle{color:var(--muted);font-size:14px;margin-right:2px;flex-shrink:0}
+    .nav-order-label-input{flex:0 0 110px;font-size:12.5px;font-weight:500}
+    .nav-order-img{flex:1;font-size:12px}
+    /* Two-col grid */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">Admin</div>
+
+    <button class="nav-btn active" onclick="showPanel('about',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      About
+    </button>
+    <button class="nav-btn" onclick="showPanel('homepage',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Homepage
+    </button>
+    <button class="nav-btn" onclick="showPanel('projects',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Projects
+    </button>
+    <button class="nav-btn" onclick="showPanel('images',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      Images
+    </button>
+    <button class="nav-btn" onclick="showPanel('typography',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+      Typography
+    </button>
+    <button class="nav-btn" onclick="showPanel('design',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+      Design
+    </button>
+
+    <div class="sidebar-footer">
+      <a href="/preview" target="_blank">← View site</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- ABOUT -->
+    <div id="panel-about" class="panel active">
+      <div class="panel-header">
+        <h2>About</h2>
+        <p>Edit your personal bio, traits, and role entries.</p>
+      </div>
+
+      <label>Tagline</label>
+      <input type="text" id="about-tagline" placeholder="symptom of the network">
+
+      <label>Contact Email</label>
+      <input type="email" id="about-email" placeholder="you@example.com">
+
+      <label>Traits <span style="text-transform:none;font-weight:400;color:#555">(one per line · HTML spans OK)</span></label>
+      <textarea id="about-traits" rows="5" placeholder='believes irony is a valid <span class="hl-blue">design principle</span>'></textarea>
+
+      <hr class="divider">
+      <div class="tag">Roles</div>
+      <div id="roles-list"></div>
+      <button class="btn btn-ghost btn-sm" id="add-role-btn" style="margin-top:8px">+ Add Role</button>
+
+      <br><br>
+      <button class="btn btn-primary" onclick="saveAbout()">Save About</button>
+    </div>
+
+    <!-- PROJECTS -->
+    <div id="panel-projects" class="panel">
+      <div class="panel-header">
+        <h2>Projects</h2>
+        <p>Edit project titles, descriptions, links, and media per category.</p>
+      </div>
+
+      <div class="cat-tabs">
+        <button class="cat-tab active" onclick="switchCat('art',this)">Art</button>
+        <button class="cat-tab" onclick="switchCat('design',this)">Design</button>
+        <button class="cat-tab" onclick="switchCat('experiments',this)">Experiments</button>
+      </div>
+
+      <div id="projects-art" class="cat-panel"></div>
+      <div id="projects-design" class="cat-panel" style="display:none"></div>
+      <div id="projects-experiments" class="cat-panel" style="display:none"></div>
+
+      <button class="btn btn-ghost btn-sm" id="add-project-btn" onclick="addProject()" style="margin-top:4px">+ Add Project</button>
+
+      <br><br>
+      <button class="btn btn-primary" onclick="saveProjects()">Save All Projects</button>
+    </div>
+
+    <!-- IMAGES -->
+    <div id="panel-images" class="panel">
+      <div class="panel-header">
+        <h2>Images</h2>
+        <p>Upload new images or copy paths to use in projects.</p>
+      </div>
+
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('upload-file').click()">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Click to select or drag & drop images / videos</p>
+        <input type="file" id="upload-file" accept="image/*,video/*" multiple>
+      </div>
+      <div class="upload-progress" id="upload-progress"><div class="upload-progress-bar" id="upload-bar"></div></div>
+
+      <hr class="divider">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div class="tag" style="margin-bottom:0">Library</div>
+        <button class="btn btn-ghost btn-sm" onclick="loadImages()">↺ Refresh</button>
+      </div>
+      <div class="gallery-grid" id="image-gallery"></div>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+    <div id="panel-typography" class="panel">
+      <div class="panel-header">
+        <h2>Typography</h2>
+        <p>Change the site font, size, and spacing. Changes are written directly to styles.css.</p>
+      </div>
+
+      <label>Font Family</label>
+      <select id="font-family-select" onchange="updateFontPreview()">
+        <option value="'Futura','Futura PT','Jost','Century Gothic','Trebuchet MS',sans-serif">Futura / Jost (default)</option>
+        <option value="'Inter',sans-serif">Inter</option>
+        <option value="'DM Sans',sans-serif">DM Sans</option>
+        <option value="'Space Grotesk',sans-serif">Space Grotesk</option>
+        <option value="'Outfit',sans-serif">Outfit</option>
+        <option value="'Playfair Display',serif">Playfair Display</option>
+        <option value="'IBM Plex Mono',monospace">IBM Plex Mono</option>
+        <optgroup label="── Geometric / Display ──">
+          <option value="'Space Mono',monospace">Space Mono</option>
+          <option value="'Major Mono Display',monospace">Major Mono Display</option>
+          <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
+          <option value="'Barlow Condensed',sans-serif">Barlow Condensed</option>
+          <option value="'Syne',sans-serif">Syne</option>
+          <option value="'Oxanium',sans-serif">Oxanium</option>
+          <option value="'Share Tech Mono',monospace">Share Tech Mono</option>
+        </optgroup>
+        <option value="custom">Custom…</option>
+      </select>
+      <input type="text" id="font-family-custom" placeholder="e.g. 'Helvetica Neue', Arial, sans-serif" style="display:none;margin-top:8px">
+
+      <div class="font-preview" id="font-preview">The quick brown fox jumps over the lazy dog.</div>
+
+      <label>Base Font Size <span class="range-val" id="font-size-val">14px</span></label>
+      <input type="range" id="font-size" min="11" max="20" value="14" oninput="document.getElementById('font-size-val').textContent=this.value+'px';updateFontPreview()">
+
+      <label>Letter Spacing <span class="range-val" id="letter-spacing-val">0.02em</span></label>
+      <input type="range" id="letter-spacing" min="0" max="30" value="2" oninput="document.getElementById('letter-spacing-val').textContent=(this.value/100).toFixed(2)+'em';updateFontPreview()">
+
+      <br><br>
+      <button class="btn btn-primary" onclick="saveTypography()">Save Typography</button>
+    </div>
+
+    <!-- HOMEPAGE -->
+    <div id="panel-homepage" class="panel">
+      <div class="panel-header">
+        <h2>Homepage</h2>
+        <p>Reorder nav items, set preview images, add social links, and adjust content margin.</p>
+      </div>
+
+      <div class="tag">Nav Order &amp; Preview Images</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Drag rows to reorder. Add an image URL to show a square preview above the nav label.</p>
+      <div id="nav-order-list"></div>
+
+      <hr class="divider">
+      <div class="tag">Social Links</div>
+
+      <label>Twitter / X URL</label>
+      <input type="text" id="input-twitter" placeholder="https://x.com/yourhandle">
+
+      <label>LinkedIn URL</label>
+      <input type="text" id="input-linkedin" placeholder="https://linkedin.com/in/yourhandle">
+
+      <label>Instagram URL</label>
+      <input type="text" id="input-instagram" placeholder="https://instagram.com/yourhandle">
+
+      <hr class="divider">
+      <div class="tag">Layout</div>
+
+      <label>MO Button Label</label>
+      <input type="text" id="mo-label-input" placeholder="MO" style="max-width:200px">
+      <p style="font-size:11px;color:var(--muted);margin-top:4px">Try: MO · Miracle Otugo · M.O. — short labels show as a circle, longer ones expand to a pill.</p>
+
+      <label>Content Left Margin <span class="range-val" id="margin-val">48px</span></label>
+      <input type="range" id="content-margin" min="0" max="200" value="48" oninput="document.getElementById('margin-val').textContent=this.value+'px'">
+
+      <br><br>
+      <button class="btn btn-primary" onclick="saveHomepage()">Save Homepage</button>
+    </div>
+
+    <!-- DESIGN -->
+    <div id="panel-design" class="panel">
+      <div class="panel-header">
+        <h2>Design</h2>
+        <p>Edit CSS custom properties. Use any valid CSS colour (hex, hsl, rgb…).</p>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <label>Background (--bg)</label>
+          <div class="color-row">
+            <button class="color-swatch" id="swatch-bg"><input type="color" id="cpicker-bg" oninput="syncColor('bg')"></button>
+            <input type="text" id="design-bg" placeholder="#0C0C0C" oninput="syncSwatch('bg')">
+          </div>
+        </div>
+        <div>
+          <label>Text Primary (--text-primary)</label>
+          <div class="color-row">
+            <button class="color-swatch" id="swatch-text"><input type="color" id="cpicker-text" oninput="syncColor('text')"></button>
+            <input type="text" id="design-text" placeholder="#FFFFFF" oninput="syncSwatch('text')">
+          </div>
+        </div>
+        <div>
+          <label>Accent Blue (--accent-blue)</label>
+          <div class="color-row">
+            <button class="color-swatch" id="swatch-blue"><input type="color" id="cpicker-blue" oninput="syncColor('blue')"></button>
+            <input type="text" id="design-accent-blue" placeholder="#4a90d9" oninput="syncSwatch('blue')">
+          </div>
+        </div>
+        <div>
+          <label>Accent Warm (--accent-warm)</label>
+          <div class="color-row">
+            <button class="color-swatch" id="swatch-warm"><input type="color" id="cpicker-warm" oninput="syncColor('warm')"></button>
+            <input type="text" id="design-accent-warm" placeholder="#e8a87c" oninput="syncSwatch('warm')">
+          </div>
+        </div>
+      </div>
+
+      <br>
+      <button class="btn btn-primary" onclick="saveDesign()">Save Design</button>
+    </div>
+
+  </main>
+</div>
+
+<div id="notification"></div>
+<script src="admin.js"></script>
+</body>
+</html>
