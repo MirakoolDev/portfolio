@@ -206,7 +206,7 @@ window.PROJECTS = {
       "media": [
         {
           "type": "video",
-          "url": "https://vimeo.com/822540056?share=copy&fl=sv&fe=ci"
+          "url": "https://raw2.seadn.io/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/9ba73913810006ede15dc9336125c4fa.mov"
         }
       ]
     },
@@ -369,25 +369,35 @@ window.PROJECTS = {
   ],
   "experiments": [
     {
-      "id": "experiment-001",
-      "title": "experiment 001",
-      "desc": "generative <span class=\"hl-blue\">systems</span> exploring emergent behaviour at the edge of <span class=\"hl-warm\">order</span> and chaos",
-      "link": null,
+      "id": "ham",
+      "title": "Home's a Maze",
+      "desc": "HAM is a daily 3D maze game, solve a new maze everyday",
+      "link": "https://basement.fun/games/ham3d",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://www.youtube.com/watch?v=1mw2lnFyDSc"
+        }
+      ]
+    },
+    {
+      "id": "flaidash",
+      "title": "flaidash",
+      "desc": "flaidash is an onchain endless run game, where you can boost game play with NFT powerups",
+      "link": "https://basement.fun/games/flaidash",
       "media": []
     },
     {
-      "id": "experiment-002",
-      "title": "experiment 002",
-      "desc": "browser <span class=\"hl-blue\">APIs</span> and the limits of what is possible without a <span class=\"hl-warm\">framework</span>",
-      "link": null,
-      "media": []
-    },
-    {
-      "id": "experiment-003",
-      "title": "experiment 003",
-      "desc": "procedural <span class=\"hl-blue\">generation</span> meets <span class=\"hl-warm\">design</span> constraint",
-      "link": null,
-      "media": []
+      "id": "its-dashboard",
+      "title": "ITS dune dashboard",
+      "desc": "built an dune dashboard for ITS, a crypto multiplayer card game on megaETH",
+      "link": "https://dune.com/miracle7/its",
+      "media": [
+        {
+          "type": "image",
+          "url": "images/1778771195222-image_2026-05-14_16-06-17.webp"
+        }
+      ]
     }
   ]
 };
