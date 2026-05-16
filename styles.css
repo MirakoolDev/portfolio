@@ -7,24 +7,24 @@
    CSS Custom Properties — Dark (default)
    ──────────────────────────────────────── */
 :root {
-  --bg:                  #0C0C0C;
-  --text-primary:        #FFFFFF;
-  --text-secondary:      #999999;
-  --text-muted:          #333333;
-  --accent-blue:         #4a90d9;
-  --accent-warm:         #e8a87c;
-  --plus-color:          #FFFFFF;
-  --email-color:         #888888;
-  --carousel-bg:         #111111;
-  --carousel-border:     rgba(255,255,255,0.08);
-  --slide-label:         #222222;
-  --arrow-idle:          #444444;
-  --arrow-hover:         #FFFFFF;
-  --toggle-color:        #888888;
-  --toggle-hover:        #FFFFFF;
-  --speed:               0.25s;
-  --font-family:         'Space Mono',monospace;
-  --base-font-size:      12px;
+  --bg: #0C0C0C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #999999;
+  --text-muted: #333333;
+  --accent-blue: #4a90d9;
+  --accent-warm: #e8a87c;
+  --plus-color: #FFFFFF;
+  --email-color: #888888;
+  --carousel-bg: #111111;
+  --carousel-border: rgba(255, 255, 255, 0.08);
+  --slide-label: #222222;
+  --arrow-idle: #444444;
+  --arrow-hover: #FFFFFF;
+  --toggle-color: #888888;
+  --toggle-hover: #FFFFFF;
+  --speed: 0.25s;
+  --font-family: 'Inter', sans-serif;
+  --base-font-size: 14px;
   --letter-spacing-base: 0.02em;
 }
 
@@ -32,31 +32,34 @@
    Light Mode Override
    ──────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:                #FFFFFF;
-  --text-primary:      #000000;
-  --text-secondary:    #555555;
-  --text-muted:        #CCCCCC;
-  --plus-color:        #000000;
-  --email-color:       #AAAAAA;
-  --carousel-bg:       #F5F5F5;
-  --carousel-border:   rgba(0,0,0,0.06);
-  --slide-label:       #E0E0E0;
-  --arrow-idle:        #CCCCCC;
-  --arrow-hover:       #000000;
-  --toggle-color:      #999999;
-  --toggle-hover:      #000000;
+  --bg: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #555555;
+  --text-muted: #CCCCCC;
+  --plus-color: #000000;
+  --email-color: #AAAAAA;
+  --carousel-bg: #F5F5F5;
+  --carousel-border: rgba(0, 0, 0, 0.06);
+  --slide-label: #E0E0E0;
+  --arrow-idle: #CCCCCC;
+  --arrow-hover: #000000;
+  --toggle-color: #999999;
+  --toggle-hover: #000000;
 }
 
 /* ────────────────────────────────────────
    Reset
    ──────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
 }
@@ -260,7 +263,7 @@ button {
 }
 
 .page-footer {
-  padding: 0 36px 48px calc(var(--mo-width, 160px) + var(--admin-margin, 0px));
+  padding: 60px 36px 48px 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -429,7 +432,7 @@ a.project-title-link:hover {
   align-items: center;
   gap: 20px;
   padding: 44px 0 12px 0;
-  max-width: 660px;
+  max-width: 860px;
 }
 
 .carousel-viewport {
@@ -447,7 +450,7 @@ a.project-title-link:hover {
 }
 
 .carousel-slide {
-  flex: 0 0 calc((100% - 40px) / 3);
+  flex: 0 0 calc((100% - 20px) / 2);
   aspect-ratio: 1 / 1;
   min-height: 0;
   min-width: 0;
@@ -629,6 +632,7 @@ a.project-title-link:hover {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -664,7 +668,7 @@ a.project-title-link:hover {
   }
 
   .page-footer {
-    padding: 0 20px 40px calc(80px + var(--admin-margin, 0px));
+    padding: 0 20px 40px 20px;
   }
 
   .main-footer {
@@ -674,6 +678,14 @@ a.project-title-link:hover {
   }
 
   .carousel-wrap {
+    gap: 10px;
+  }
+
+  .carousel-slide {
+    flex: 0 0 100%;
+  }
+
+  .carousel-track {
     gap: 10px;
   }
 }

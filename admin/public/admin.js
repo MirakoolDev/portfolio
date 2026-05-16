@@ -501,10 +501,10 @@ async function loadHomepage() {
     const navOrder = data.navOrder || [];
     renderNavOrderList(navOrder);
 
-    const socials = data.socials || {};
-    document.getElementById('input-twitter').value   = socials.twitter   || '';
-    document.getElementById('input-linkedin').value  = socials.linkedin  || '';
-    document.getElementById('input-instagram').value = socials.instagram || '';
+    document.getElementById('input-twitter').value   = (data.socials || {}).twitter   || '';
+    document.getElementById('input-linkedin').value  = (data.socials || {}).linkedin  || '';
+    document.getElementById('input-instagram').value = (data.socials || {}).instagram || '';
+    document.getElementById('input-favicon').value   = data.favicon || '';
 
     const margin = typeof data.contentMarginLeft === 'number' ? data.contentMarginLeft : 48;
     document.getElementById('content-margin').value = margin;
@@ -528,12 +528,13 @@ async function saveHomepage() {
     linkedin:  document.getElementById('input-linkedin').value.trim(),
     instagram: document.getElementById('input-instagram').value.trim()
   };
+  const favicon = document.getElementById('input-favicon').value.trim();
 
   const contentMarginLeft = parseInt(document.getElementById('content-margin').value, 10);
   const moButtonLabel = document.getElementById('mo-label-input').value.trim() || 'MO';
 
   try {
-    const d = await postJSON('/api/config', { navOrder, socials, contentMarginLeft, moButtonLabel });
+    const d = await postJSON('/api/config', { navOrder, socials, favicon, contentMarginLeft, moButtonLabel });
     d.success ? notify('Homepage saved ✓') : notify('Error: ' + d.error, true);
   } catch(e) { notify(e.message, true); }
 }

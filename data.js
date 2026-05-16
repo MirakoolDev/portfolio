@@ -3,7 +3,7 @@ window.SITE_CONFIG = {
     {
       "label": "ABOUT",
       "hash": "about",
-      "image": ""
+      "image": "images/1778881176487-blackposer.webp"
     },
     {
       "label": "ART",
@@ -13,7 +13,7 @@ window.SITE_CONFIG = {
     {
       "label": "DESIGN",
       "hash": "design",
-      "image": "images/1778685811152-biogas-resize.png"
+      "image": "images/1778754975589-Alpha-comp.257.webp"
     },
     {
       "label": "ONCHAIN",
@@ -23,12 +23,12 @@ window.SITE_CONFIG = {
     {
       "label": "EXPERIMENTS",
       "hash": "experiments",
-      "image": "images/1778685600867-a-home-is-a-maze.jpg"
+      "image": "images/1778710051865-11.webp"
     },
     {
       "label": "PRINTS",
       "hash": "prints",
-      "image": ""
+      "image": "images/1778710225454-house-tree-cg.webp"
     }
   ],
   "socials": {
@@ -36,6 +36,7 @@ window.SITE_CONFIG = {
     "linkedin": "https://www.linkedin.com/in/miracleotugo/",
     "instagram": "instagram.com/black.poser"
   },
+  "favicon": "images/1778881176487-blackposer.webp",
   "contentMarginLeft": 48,
   "moButtonLabel": "MIRACLE OTUGO"
 };
@@ -67,6 +68,18 @@ window.PROJECTS = {
       ]
     },
     {
+      "id": "d+d",
+      "title": "desolation and disturbances",
+      "desc": "(Almost a loop animation)\n\n3840×1600\n\n30 fps\n\nThis loop is a recording a virtual cameraman makes in a surreal terrain. The content of this footage is open to interpretation.\n\nMusic by Rere.\n\nCreated with Blender.",
+      "link": "https://opensea.io/item/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/2",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://vimeo.com/822540056?fl=ip&fe=ec"
+        }
+      ]
+    },
+    {
       "id": "art-25",
       "title": "art '25",
       "desc": "",
@@ -87,6 +100,18 @@ window.PROJECTS = {
         {
           "type": "image",
           "url": "images/1778710473077-3.webp"
+        }
+      ]
+    },
+    {
+      "id": "birds-23",
+      "title": "birds in the corridor",
+      "desc": "",
+      "link": "https://opensea.io/item/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/1",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://vimeo.com/822547263?share=copy&fl=sv&fe=ci"
         }
       ]
     },
@@ -123,6 +148,18 @@ window.PROJECTS = {
       ]
     },
     {
+      "id": "gravity-24",
+      "title": "what is gravity",
+      "desc": "",
+      "link": null,
+      "media": [
+        {
+          "type": "video",
+          "url": "https://youtube.com/shorts/Z0kMerw4nQs"
+        }
+      ]
+    },
+    {
       "id": "art-23",
       "title": "art '23",
       "desc": "",
@@ -147,6 +184,18 @@ window.PROJECTS = {
         {
           "type": "image",
           "url": "images/1778710054001-surfboard2-pp-v2.webp"
+        }
+      ]
+    },
+    {
+      "id": "falomo",
+      "title": "Falomo Immersive",
+      "desc": "target-tracking AR installation that brings the painting on the pillar to life, anyone can experience it with a mobile device when they are in that location.",
+      "link": null,
+      "media": [
+        {
+          "type": "video",
+          "url": "https://vimeo.com/1008224792?fl=ip&fe=ec"
         }
       ]
     },
@@ -187,38 +236,38 @@ window.PROJECTS = {
       ]
     },
     {
-      "id": "gravity-24",
-      "title": "what is gravity",
-      "desc": "",
+      "id": "the-unseen-bridge",
+      "title": "the unseen bridge",
+      "desc": "Recently this year I was commissioned by Deutsche Gesellschaft für Internationale Zusammenarbeit GmbH(GIZ) to create digital art for Afrilabs annual gathering, Oct 2023.\nThe idea is to involve the public/intended audience through participation, rather than considering them as passive viewers of the artwork. The public/intended audience should become a co-author of the work, to increase the artwork’s connection to local identity as well as raising greater public support.",
+      "link": "https://www.behance.net/gallery/185978129/The-Unseen-Bridge",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://vimeo.com/1008223154?share=copy&fl=sv&fe=ci"
+        }
+      ]
+    },
+    {
+      "id": "loot-pod",
+      "title": "bamboo skin for RTFKT lootpod",
+      "desc": "design a lootpod skin for one of  RTFKT metaverse space",
+      "link": "https://opensea.io/collection/metaverse-by-bp",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://vimeo.com/994827601?share=copy&fl=sv&fe=ci"
+        }
+      ]
+    },
+    {
+      "id": "hbb",
+      "title": "playspace",
+      "desc": "interactive virtual space to gather, display art and perform.\nThe Floats Design team created and launched the first metaverse listening party in Africa. I oversaw design, modeling, and management of the environment build design process.",
       "link": null,
       "media": [
         {
           "type": "video",
-          "url": "https://x.com/MiracleOtugo/status/1726571151839924637?s=20"
-        }
-      ]
-    },
-    {
-      "id": "d+d",
-      "title": "desolation and disturbances",
-      "desc": "",
-      "link": "https://opensea.io/item/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/2",
-      "media": [
-        {
-          "type": "video",
-          "url": "https://raw2.seadn.io/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/9ba73913810006ede15dc9336125c4fa.mov"
-        }
-      ]
-    },
-    {
-      "id": "birds-23",
-      "title": "birds in the corridor",
-      "desc": "",
-      "link": "https://opensea.io/item/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/1",
-      "media": [
-        {
-          "type": "video",
-          "url": "https://vimeo.com/822547263?share=copy&fl=sv&fe=ci"
+          "url": "https://www.youtube.com/watch?v=vWNhS3EQKqU"
         }
       ]
     }
@@ -265,6 +314,18 @@ window.PROJECTS = {
       ]
     },
     {
+      "id": "moonshot",
+      "title": "Moonshot by tech cabal",
+      "desc": "At Floats we built an AR filter enhance the welcoming experience at the #Moonshot tech event hosted by Tech Cabal in Lagos. Leveraging augmented reality (AR) technology, we aimed to create an engaging and interactive welcome effect for attendees. The project involved developing a target tracking AR effect accessible through mobile devices.",
+      "link": "https://www.behance.net/gallery/182925303/Welcome-to-Moonshot-(-Augmented-Reality-experience)",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://youtube.com/shorts/dus7f_DwmF0"
+        }
+      ]
+    },
+    {
       "id": "hmd-display",
       "title": "Alpha HMD",
       "desc": "modeling practice of a modular head mounted display",
@@ -297,6 +358,18 @@ window.PROJECTS = {
         {
           "type": "image",
           "url": "images/1778754975589-Alpha-comp.257.webp"
+        }
+      ]
+    },
+    {
+      "id": "indoor-nav",
+      "title": "Indoor Navigation at Bournemouth Uni",
+      "desc": "I developed an indoor navigation app with Samuel Ubani using Unity and the Vuforia engine, designed to help people find their way in large public spaces like university campuses, malls, airports, and hospitals.\n\nIn this video, we showcase a demo of our of the prototype, which we've built for and tested in a school environment (Bournemouth University) to demonstrate its functionality and potential.\n\nHow It Works:\nImage Recognition 📸: The app uses Vuforia Engine to recognize specific images or markers in the environment, helping to determine the user's location.\nPathfinding 🧭: Unity's AI Navigation component to calculates the best route to the destination, guiding users with clear, easy-to-follow directions.\n\nWhy It's Great:\nUser-Friendly: Anyone can use the app to navigate complex spaces without getting lost.\nAccessibility: It's a helpful tool for everyone, including people with disabilities.\nEfficient: Reduces the need for physical signs and helps manage visitor flow bette",
+      "link": null,
+      "media": [
+        {
+          "type": "video",
+          "url": "https://www.youtube.com/shorts/TN8w5YSj4ts"
         }
       ]
     },
@@ -351,20 +424,6 @@ window.PROJECTS = {
           "url": "images/1778753389534-Smart-Steth.59.webp"
         }
       ]
-    },
-    {
-      "id": "hiperaktiv-24",
-      "title": "hiperaktiv '24",
-      "desc": "logo design",
-      "link": null,
-      "media": []
-    },
-    {
-      "id": "orion-pharma-23",
-      "title": "orion pharma '23",
-      "desc": "web design",
-      "link": "https://orionsaglik-tr.com/",
-      "media": []
     }
   ],
   "experiments": [
@@ -385,7 +444,24 @@ window.PROJECTS = {
       "title": "flaidash",
       "desc": "flaidash is an onchain endless run game, where you can boost game play with NFT powerups",
       "link": "https://basement.fun/games/flaidash",
-      "media": []
+      "media": [
+        {
+          "type": "video",
+          "url": "https://youtu.be/FGPousJxHHU"
+        },
+        {
+          "type": "image",
+          "url": "images/1778881896543-1.webp"
+        },
+        {
+          "type": "image",
+          "url": "images/1778881896248-to-bsmnt.webp"
+        },
+        {
+          "type": "image",
+          "url": "images/1778881896089-Screenshot-2025-04-09-212712.webp"
+        }
+      ]
     },
     {
       "id": "its-dashboard",

@@ -134,6 +134,35 @@ function renderProjectList(category) {
   // Single delegated listener per list
   container.addEventListener('click', handleListClick);
   container.addEventListener('keydown', handleListKeydown);
+
+  // Add touch swiping for each carousel viewport in this container
+  container.querySelectorAll('.carousel-viewport').forEach(initTouchCarousel);
+}
+
+function initTouchCarousel(vp) {
+  const pid = vp.id.replace('vp-', '');
+  let startX = 0;
+  let moveX = 0;
+  let isSwiping = false;
+
+  vp.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    isSwiping = true;
+  }, { passive: true });
+
+  vp.addEventListener('touchmove', (e) => {
+    if (!isSwiping) return;
+    moveX = e.touches[0].clientX - startX;
+  }, { passive: true });
+
+  vp.addEventListener('touchend', () => {
+    if (!isSwiping) return;
+    if (Math.abs(moveX) > 50) {
+      slide(pid, moveX > 0 ? 'prev' : 'next');
+    }
+    isSwiping = false;
+    moveX = 0;
+  });
 }
 
 function buildProjectItem(p) {
@@ -148,7 +177,13 @@ function buildProjectItem(p) {
     if (p.media && p.media[i]) {
       const m = p.media[i];
       if (m.type === 'video') {
-         return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><iframe src="${m.url}" style="width:100%;height:100%;border:none;pointer-events:none;" allowfullscreen></iframe></div>`;
+         // Check if it's a local file or an external embed
+         if (m.url.startsWith('images/') || m.url.endsWith('.mp4') || m.url.endsWith('.webm')) {
+           return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><video src="${m.url}" style="width:100%;height:100%;object-fit:cover;" muted loop playsinline autoplay></video></div>`;
+         } else {
+           const embedUrl = formatEmbedUrl(m.url);
+           return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><iframe src="${embedUrl}" style="width:100%;height:100%;border:none;pointer-events:none;" allowfullscreen></iframe></div>`;
+         }
       } else {
          return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><img src="${m.url}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;"></div>`;
       }
@@ -250,7 +285,8 @@ function slide(pid, dir) {
 
   if (track && track.children.length > 0) {
     const slideWidth = track.children[0].offsetWidth;
-    const gap = 20;
+    const style = window.getComputedStyle(track);
+    const gap = parseInt(style.gap) || 0;
     track.style.transform = `translateX(-${state.current * (slideWidth + gap)}px)`;
   }
   if (counter) counter.textContent   = `${pad(state.current + 1)} / ${pad(state.total)}`;
@@ -307,12 +343,37 @@ function renderLightboxSlide() {
   
   const m = lightboxData[lightboxIndex];
   if (m.type === 'video') {
-    content.innerHTML = `<iframe src="${m.url}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+    if (m.url.startsWith('images/') || m.url.endsWith('.mp4') || m.url.endsWith('.webm')) {
+      content.innerHTML = `<video src="${m.url}" style="max-width:100%; max-height:100%;" controls autoplay loop playsinline></video>`;
+    } else {
+      const embedUrl = formatEmbedUrl(m.url);
+      content.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+    }
   } else {
     content.innerHTML = `<img src="${m.url}" alt="Lightbox media" style="max-width:100%; max-height:100%; object-fit:contain;">`;
   }
   
   if (counter) counter.textContent = `${pad(lightboxIndex + 1)} / ${pad(lightboxData.length)}`;
+}
+
+/**
+ * Automatically converts watch URLs to embed URLs for YT and Vimeo
+ */
+function formatEmbedUrl(url) {
+  if (url.includes('youtube.com/watch?v=')) {
+    return url.replace('watch?v=', 'embed/');
+  }
+  if (url.includes('youtube.com/shorts/')) {
+    return url.replace('shorts/', 'embed/');
+  }
+  if (url.includes('youtu.be/')) {
+    return url.replace('youtu.be/', 'youtube.com/embed/');
+  }
+  if (url.includes('vimeo.com/') && !url.includes('player.vimeo.com')) {
+    const id = url.split('/').pop().split('?')[0];
+    return `https://player.vimeo.com/video/${id}`;
+  }
+  return url;
 }
 
 // Ensure SITE_CONFIG exists so the page doesn't crash if it's missing from data.js
@@ -376,6 +437,12 @@ function init() {
   renderSocialLinks();
   applyContentMargin();
   applyMOLabel();
+
+  // Apply Favicon
+  if (SITE_CONFIG.favicon) {
+    const tag = document.getElementById('favicon-tag');
+    if (tag) tag.href = SITE_CONFIG.favicon;
+  }
 
   window.addEventListener('hashchange', route);
   route(); // run immediately for initial URL
