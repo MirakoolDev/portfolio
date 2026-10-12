@@ -428,6 +428,54 @@ window.PROJECTS = {
   ],
   "experiments": [
     {
+      "id": "pfwa",
+      "title": "PFWA",
+      "link": "https://pfwa.fun",
+      "desc": "A permissionless prediction market. Anyone can create and trade markets on token price, market cap, onchain TVL and fees, real-world assets, or a trader's PnL — 128 markets live, settled from chain data. Built on Robinhood Chain and HyperEVM.",
+      "media": [
+        {
+          "type": "image",
+          "url": "images/1791807600-pfwa.jpg"
+        }
+      ]
+    },
+    {
+      "id": "credence",
+      "title": "Credence",
+      "link": "https://credence.pfwa.fun",
+      "desc": "The conviction layer: memecoins powered by prediction markets. A token's trading fees fund a Polymarket bet, and winnings bridge back to buy and burn its supply. Fees can instead be pointed at any X account, claimable with no wallet and no gas. Pons, Polymarket, Relay and Privy under the hood.",
+      "media": [
+        {
+          "type": "image",
+          "url": "images/1791807600-credence.jpg"
+        }
+      ]
+    },
+    {
+      "id": "sherwood",
+      "title": "Sherwood",
+      "link": "https://sherwood.pfwa.fun",
+      "desc": "A round-based onchain game built as a Uniswap V4 hook. Every move is a buy, LPs earn on each one, and the game gates itself shut until a 0.05 ETH buy moves the pool less than 10%. Built for the Identity MD hackathon.",
+      "media": [
+        {
+          "type": "image",
+          "url": "images/1791807600-sherwood.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ed4ns",
+      "title": "ed4ns",
+      "link": "https://ed4ns.pfwa.fun",
+      "desc": "A fully onchain survival game layered on top of open edition mints. Mints fund a dynamic prize pool, each round eliminates about half the tokens using onchain randomness from Dice Protocol, and the last four split the pot. Open source, on Base.",
+      "media": [
+        {
+          "type": "image",
+          "url": "images/1791807600-ed4ns.jpg"
+        }
+      ]
+    },
+    {
       "id": "ham",
       "title": "Home's a Maze",
       "desc": "HAM is a daily 3D maze game, solve a new maze everyday",
