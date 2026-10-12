@@ -7,16 +7,18 @@
 const PROJECTS    = window.PROJECTS    || {};
 const SITE_CONFIG = window.SITE_CONFIG || {};
 
-/* ─────────────────────────────────────────
-   State
-   ───────────────────────────────────────── */
-const carouselState = {};
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Reveal-on-scroll hides content until it's observed, so only arm it once
+// the script is actually running — otherwise a JS failure blanks the page.
+document.documentElement.classList.add('js');
 
 /* ─────────────────────────────────────────
    Lightbox State
    ───────────────────────────────────────── */
 let lightboxData = [];
 let lightboxIndex = 0;
+let lightboxOpener = null;
 
 /* ─────────────────────────────────────────
    Nav Rendering (from SITE_CONFIG.navOrder)
@@ -26,13 +28,13 @@ function renderNav() {
   if (!nav) return;
   const items  = (SITE_CONFIG.navOrder || []);
 
-  nav.innerHTML = items.map(item => {
+  nav.innerHTML = items.map((item, i) => {
     // Only show the image box when an image URL is actually set
     const imgHTML = item.image
-      ? `<div class="nav-preview"><img src="${item.image}" alt="${item.label} preview"></div>`
+      ? `<div class="nav-preview"><img src="${item.image}" alt="${item.label} preview" loading="eager" decoding="async"></div>`
       : '';
     return `
-      <a href="#${item.hash}" class="nav-link${item.image ? ' nav-link--has-image' : ''}" id="nav-${item.hash}">
+      <a href="#${item.hash}" class="nav-link${item.image ? ' nav-link--has-image' : ''}" id="nav-${item.hash}" style="--i:${i}">
         ${imgHTML}
         <span class="nav-label">${item.label}</span>
       </a>`;
@@ -52,12 +54,17 @@ function renderSocialLinks() {
   const socials = SITE_CONFIG.socials || {};
   const links = ['twitter','linkedin','instagram']
     .filter(k => socials[k])
-    .map(k => `<a href="${socials[k]}" target="_blank" rel="noopener" class="social-link" id="icon-${k}" aria-label="${k}">${SOCIAL_ICONS[k]}</a>`)
+    .map(k => `<a href="${normaliseUrl(socials[k])}" target="_blank" rel="noopener" class="social-link" id="icon-${k}" aria-label="${k}">${SOCIAL_ICONS[k]}</a>`)
     .join('');
 
   document.querySelectorAll('.social-links').forEach(el => {
     el.innerHTML = links;
   });
+}
+
+/** Social URLs are sometimes saved without a scheme — don't let them resolve as relative paths. */
+function normaliseUrl(url) {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
 }
 
 /* ─────────────────────────────────────────
@@ -66,26 +73,72 @@ function renderSocialLinks() {
 function applyContentMargin() {
   const adminMargin = SITE_CONFIG.contentMarginLeft || 0;
   document.documentElement.style.setProperty('--admin-margin', adminMargin + 'px');
-
-  const moBtn = document.getElementById('mo-home');
-  if (moBtn) {
-    const updateWidth = () => {
-      const rect = moBtn.getBoundingClientRect();
-      const safeLeft = rect.right > 0 ? rect.right + 24 : 160;
-      document.documentElement.style.setProperty('--mo-width', safeLeft + 'px');
-    };
-
-    updateWidth();
-    if (document.fonts) document.fonts.ready.then(updateWidth);
-    if (window.ResizeObserver) new ResizeObserver(updateWidth).observe(moBtn);
-  }
 }
 
 /* ─────────────────────────────────────────
-   MO Home Button — always visible
+   Reveal-on-scroll
    ───────────────────────────────────────── */
-function updateMOVisibility() {
-  // Button is always visible on all pages — no-op
+let revealObserver = null;
+
+function getRevealObserver() {
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) return null;
+  if (revealObserver) return revealObserver;
+
+  revealObserver = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      obs.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+
+  return revealObserver;
+}
+
+function observeReveals(root) {
+  const obs = getRevealObserver();
+  const items = root.querySelectorAll('.reveal');
+
+  if (!obs) {
+    items.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+  items.forEach((el, i) => {
+    el.style.setProperty('--d', `${Math.min(i, 5) * 70}ms`);
+    obs.observe(el);
+  });
+}
+
+/* ─────────────────────────────────────────
+   Play videos only while they're on screen
+   ───────────────────────────────────────── */
+let videoObserver = null;
+
+function getVideoObserver() {
+  if (!('IntersectionObserver' in window)) return null;
+  if (videoObserver) return videoObserver;
+
+  videoObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const v = entry.target;
+      if (entry.isIntersecting) {
+        const play = v.play();
+        if (play && play.catch) play.catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+  }, { threshold: 0.25 });
+
+  return videoObserver;
+}
+
+function observeVideos(root) {
+  const obs = getVideoObserver();
+  root.querySelectorAll('video[data-inview]').forEach(v => {
+    if (obs) obs.observe(v);
+    else { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  });
 }
 
 /* ─────────────────────────────────────────
@@ -108,11 +161,14 @@ function route() {
     renderProjectList(target);
   }
 
-  // Scroll active view to top
+  // Scroll active view to top (instantly — this is a page change, not a jump)
   const active = document.getElementById(`view-${target}`);
-  if (active) active.scrollTop = 0;
-
-  updateMOVisibility();
+  if (active) {
+    const previous = active.style.scrollBehavior;
+    active.style.scrollBehavior = 'auto';
+    active.scrollTop = 0;
+    active.style.scrollBehavior = previous;
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -125,68 +181,53 @@ function renderProjectList(category) {
   container.innerHTML = PROJECTS[category].map(buildProjectItem).join('');
   container.dataset.rendered = 'true';
 
-  // Initialise carousel state for each project
-  PROJECTS[category].forEach(p => {
-    const slideCount = p.media && p.media.length > 0 ? p.media.length : 1;
-    carouselState[p.id] = { current: 0, total: slideCount };
-  });
-
   // Single delegated listener per list
   container.addEventListener('click', handleListClick);
-  container.addEventListener('keydown', handleListKeydown);
 
-  // Add touch swiping for each carousel viewport in this container
-  container.querySelectorAll('.carousel-viewport').forEach(initTouchCarousel);
+  container.querySelectorAll('.carousel-viewport').forEach(initCarousel);
+  container.querySelectorAll('.carousel-slide img').forEach(markWhenLoaded);
+  observeVideos(container);
+  observeReveals(container);
 }
 
-function initTouchCarousel(vp) {
-  const pid = vp.id.replace('vp-', '');
-  let startX = 0;
-  let moveX = 0;
-  let isSwiping = false;
-
-  vp.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    isSwiping = true;
-  }, { passive: true });
-
-  vp.addEventListener('touchmove', (e) => {
-    if (!isSwiping) return;
-    moveX = e.touches[0].clientX - startX;
-  }, { passive: true });
-
-  vp.addEventListener('touchend', () => {
-    if (!isSwiping) return;
-    if (Math.abs(moveX) > 50) {
-      slide(pid, moveX > 0 ? 'prev' : 'next');
-    }
-    isSwiping = false;
-    moveX = 0;
-  });
+/** Fade media in once the bytes have actually arrived. */
+function markWhenLoaded(img) {
+  if (img.complete && img.naturalWidth > 0) {
+    img.classList.add('is-loaded');
+    return;
+  }
+  img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
+  img.addEventListener('error', () => img.classList.add('is-loaded'), { once: true });
 }
 
-function buildProjectItem(p) {
+function buildProjectItem(p, projectIndex) {
   // Title: link if external URL provided, otherwise plain text
   const titleEl = p.link
     ? `<a href="${p.link}" target="_blank" rel="noopener" class="project-title-link">${p.title}</a>`
-    : `<span class="project-title-text">${p.title}</span>`;
+    : `<span class="project-title-text" data-pid="${p.id}">${p.title}</span>`;
 
-  // Generate slides
   const slideCount = p.media && p.media.length > 0 ? p.media.length : 1;
+  const isSingle   = slideCount <= 1;
+  const isEmbedOnly = isSingle
+    && p.media && p.media[0]
+    && p.media[0].type === 'video'
+    && !/^images\/|\.(mp4|webm)$/.test(p.media[0].url);
+
   const slides = Array.from({ length: slideCount }, (_, i) => {
     if (p.media && p.media[i]) {
       const m = p.media[i];
+      // First couple of frames load eagerly so the open panel is never blank
+      const loading = projectIndex === 0 && i < 2 ? 'eager' : 'lazy';
+
       if (m.type === 'video') {
          // Check if it's a local file or an external embed
          if (m.url.startsWith('images/') || m.url.endsWith('.mp4') || m.url.endsWith('.webm')) {
-           return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><video src="${m.url}" style="width:100%;height:100%;object-fit:cover;" muted loop playsinline autoplay></video></div>`;
-         } else {
-           const embedUrl = formatEmbedUrl(m.url);
-           return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><iframe src="${embedUrl}" style="width:100%;height:100%;border:none;pointer-events:none;" allowfullscreen></iframe></div>`;
+           return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><video src="${m.url}" muted loop playsinline preload="metadata" data-inview></video></div>`;
          }
-      } else {
-         return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><img src="${m.url}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;"></div>`;
+         const embedUrl = formatEmbedUrl(m.url);
+         return `<div class="carousel-slide is-embed" role="figure" data-pid="${p.id}" data-index="${i}"><iframe src="${embedUrl}" title="${p.title}" loading="lazy" allowfullscreen></iframe></div>`;
       }
+      return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><img src="${m.url}" alt="${p.title}" loading="${loading}" decoding="async"></div>`;
     }
     return `
       <div class="carousel-slide" role="img" aria-label="Image ${i + 1} of ${slideCount}">
@@ -195,31 +236,36 @@ function buildProjectItem(p) {
       </div>`;
   }).join('');
 
+  const description = p.desc
+    ? `<p class="project-description">${p.desc}</p>`
+    : '';
+
   return `
-    <div class="project-item" id="item-${p.id}">
+    <div class="project-item reveal" id="item-${p.id}">
       <div class="project-header">
-        ${titleEl}
-        <p class="project-description">${p.desc}</p>
-        <span
-          class="project-toggle is-open"
-          data-pid="${p.id}"
-          role="button"
-          tabindex="0"
-          aria-expanded="true"
-          aria-controls="expand-${p.id}"
-          aria-label="Collapse ${p.title}">+</span>
+        <div class="project-title-row">
+          ${titleEl}
+          <button
+            type="button"
+            class="project-toggle is-open"
+            data-pid="${p.id}"
+            aria-expanded="true"
+            aria-controls="expand-${p.id}"
+            aria-label="Collapse ${p.title}">+</button>
+        </div>
+        ${description}
       </div>
 
-      <div class="project-expand open" id="expand-${p.id}" aria-hidden="false">
-        <div class="carousel-wrap">
-          <button class="carousel-btn" data-dir="prev" data-pid="${p.id}" aria-label="Previous">←</button>
-          <div class="carousel-viewport" id="vp-${p.id}">
-            <div class="carousel-track" id="track-${p.id}">${slides}</div>
+      <div class="project-expand open" id="expand-${p.id}">
+        <div class="project-expand-inner">
+          <div class="carousel-wrap${isSingle ? ' is-single' : ''}${isEmbedOnly ? ' is-wide' : ''}">
+            <button class="carousel-btn" data-dir="prev" data-pid="${p.id}" aria-label="Previous image" disabled>←</button>
+            <div class="carousel-viewport" id="vp-${p.id}" tabindex="0" role="group" aria-label="${p.title} media">${slides}</div>
+            <button class="carousel-btn" data-dir="next" data-pid="${p.id}" aria-label="Next image">→</button>
           </div>
-          <button class="carousel-btn" data-dir="next" data-pid="${p.id}" aria-label="Next">→</button>
-        </div>
-        <div class="carousel-meta">
-          <span class="carousel-counter" id="counter-${p.id}">${pad(1)} / ${pad(slideCount)}</span>
+          <div class="carousel-meta${isSingle ? ' is-single-meta' : ''}">
+            <span class="carousel-counter" id="counter-${p.id}" aria-live="polite">${pad(1)} / ${pad(slideCount)}</span>
+          </div>
         </div>
       </div>
     </div>`;
@@ -230,72 +276,135 @@ function pad(n) {
 }
 
 /* ─────────────────────────────────────────
+   Carousel — native scroll-snap, no transform math
+   ───────────────────────────────────────── */
+function initCarousel(vp) {
+  const pid     = vp.id.replace('vp-', '');
+  const counter = document.getElementById(`counter-${pid}`);
+  const wrap    = vp.closest('.carousel-wrap');
+  const prevBtn = wrap && wrap.querySelector('[data-dir="prev"]');
+  const nextBtn = wrap && wrap.querySelector('[data-dir="next"]');
+  const total   = vp.children.length;
+
+  let ticking = false;
+
+  const sync = () => {
+    ticking = false;
+    const step    = slideStep(vp);
+    const index   = step ? Math.round(vp.scrollLeft / step) : 0;
+    const atStart = vp.scrollLeft <= 1;
+    const atEnd   = vp.scrollLeft >= vp.scrollWidth - vp.clientWidth - 1;
+
+    if (counter) counter.textContent = `${pad(Math.min(index + 1, total))} / ${pad(total)}`;
+    if (prevBtn) prevBtn.disabled = atStart;
+    if (nextBtn) nextBtn.disabled = atEnd;
+  };
+
+  vp.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(sync);
+  }, { passive: true });
+
+  // Keyboard paging / opening when the scroller itself has focus
+  vp.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); slide(pid, 'next'); return; }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); slide(pid, 'prev'); return; }
+
+    if (e.key === 'Enter' || e.key === ' ') {
+      const step    = slideStep(vp);
+      const current = vp.children[step ? Math.round(vp.scrollLeft / step) : 0];
+      if (current && current.dataset.pid) {
+        e.preventDefault();
+        openLightbox(current.dataset.pid, parseInt(current.dataset.index, 10), vp);
+      }
+    }
+  });
+
+  if (window.ResizeObserver) new ResizeObserver(sync).observe(vp);
+  sync();
+}
+
+/** Width of one slide plus the gap between slides. */
+function slideStep(vp) {
+  const first = vp.children[0];
+  if (!first) return 0;
+  const gap = parseFloat(getComputedStyle(vp).columnGap) || 0;
+  return first.getBoundingClientRect().width + gap;
+}
+
+function slide(pid, dir) {
+  const vp = document.getElementById(`vp-${pid}`);
+  if (!vp) return;
+  const step = slideStep(vp);
+  vp.scrollBy({
+    left: dir === 'next' ? step : -step,
+    behavior: prefersReducedMotion ? 'auto' : 'smooth'
+  });
+}
+
+/* ─────────────────────────────────────────
    Event Handlers (delegated)
    ───────────────────────────────────────── */
 function handleListClick(e) {
   const toggle = e.target.closest('.project-toggle');
   if (toggle) { toggleExpand(toggle.dataset.pid, toggle); return; }
 
+  // Titles without an external link act as the expand/collapse control too
+  const title = e.target.closest('.project-title-text');
+  if (title && title.dataset.pid) {
+    const btn = document.querySelector(`.project-toggle[data-pid="${title.dataset.pid}"]`);
+    if (btn) toggleExpand(title.dataset.pid, btn);
+    return;
+  }
+
   const btn = e.target.closest('.carousel-btn');
   if (btn) { slide(btn.dataset.pid, btn.dataset.dir); return; }
 
   const slideEl = e.target.closest('.carousel-slide');
   if (slideEl && slideEl.dataset.pid) {
-    openLightbox(slideEl.dataset.pid, parseInt(slideEl.dataset.index, 10));
-    return;
-  }
-}
-
-function handleListKeydown(e) {
-  if (e.key === 'Enter' || e.key === ' ') {
-    const toggle = e.target.closest('.project-toggle');
-    if (toggle) {
-      e.preventDefault();
-      toggleExpand(toggle.dataset.pid, toggle);
-    }
+    openLightbox(slideEl.dataset.pid, parseInt(slideEl.dataset.index, 10), slideEl);
   }
 }
 
 /* ─────────────────────────────────────────
    Expand / Collapse
    ───────────────────────────────────────── */
+const expandTimers = new WeakMap();
+
 function toggleExpand(pid, toggleEl) {
   const panel = document.getElementById(`expand-${pid}`);
   if (!panel) return;
 
-  const open = panel.classList.toggle('open');
+  const open = !panel.classList.contains('open');
+
+  // height:auto can't be transitioned, so pin the current px height,
+  // flip the class, then animate to the measured target. scrollHeight
+  // reports the full content height even while the panel is clipped.
+  panel.style.height = `${panel.offsetHeight}px`;
+  panel.classList.toggle('open', open);
+  void panel.offsetHeight; // force the start value to stick
+
+  panel.style.height = open ? `${panel.scrollHeight}px` : '0px';
+
+  clearTimeout(expandTimers.get(panel));
+  expandTimers.set(panel, setTimeout(() => {
+    // Hand sizing back to CSS so the panel can reflow with the viewport
+    panel.style.height = '';
+  }, 520));
+
   toggleEl.classList.toggle('is-open', open);
   toggleEl.setAttribute('aria-expanded', String(open));
-  panel.setAttribute('aria-hidden', String(!open));
+  toggleEl.setAttribute(
+    'aria-label',
+    `${open ? 'Collapse' : 'Expand'} ${toggleEl.getAttribute('aria-label').replace(/^(Collapse|Expand) /, '')}`
+  );
 }
 
 /* ─────────────────────────────────────────
-   Carousel Navigation
+   Lightbox
    ───────────────────────────────────────── */
-function slide(pid, dir) {
-  const state = carouselState[pid];
-  if (!state) return;
-
-  state.current = dir === 'next'
-    ? (state.current + 1) % state.total
-    : (state.current - 1 + state.total) % state.total;
-
-  const track   = document.getElementById(`track-${pid}`);
-  const counter = document.getElementById(`counter-${pid}`);
-
-  if (track && track.children.length > 0) {
-    const slideWidth = track.children[0].offsetWidth;
-    const style = window.getComputedStyle(track);
-    const gap = parseInt(style.gap) || 0;
-    track.style.transform = `translateX(-${state.current * (slideWidth + gap)}px)`;
-  }
-  if (counter) counter.textContent   = `${pad(state.current + 1)} / ${pad(state.total)}`;
-}
-
-/* ─────────────────────────────────────────
-   Lightbox Navigation
-   ───────────────────────────────────────── */
-function openLightbox(pid, startIndex) {
+function openLightbox(pid, startIndex, opener) {
   let proj = null;
   for (const cat in PROJECTS) {
     proj = PROJECTS[cat].find(p => p.id === pid);
@@ -305,24 +414,34 @@ function openLightbox(pid, startIndex) {
 
   lightboxData = proj.media;
   lightboxIndex = startIndex;
+  lightboxOpener = opener || null;
 
   renderLightboxSlide();
-  
+
   const lb = document.getElementById('lightbox');
-  if (lb) {
-    lb.classList.remove('hidden');
-    lb.setAttribute('aria-hidden', 'false');
-  }
+  if (!lb) return;
+
+  lb.classList.toggle('is-single', lightboxData.length <= 1);
+  lb.classList.remove('hidden');
+  lb.setAttribute('aria-hidden', 'false');
+
+  const close = document.getElementById('lightbox-close');
+  if (close) close.focus({ preventScroll: true });
 }
 
 function closeLightbox() {
   const lb = document.getElementById('lightbox');
-  if (lb) {
-    lb.classList.add('hidden');
-    lb.setAttribute('aria-hidden', 'true');
-    // clear iframe to stop video playback
-    document.getElementById('lightbox-content').innerHTML = '';
+  if (!lb || lb.classList.contains('hidden')) return;
+
+  lb.classList.add('hidden');
+  lb.setAttribute('aria-hidden', 'true');
+  // clear media so videos and embeds stop playing
+  document.getElementById('lightbox-content').innerHTML = '';
+
+  if (lightboxOpener && document.contains(lightboxOpener)) {
+    lightboxOpener.focus({ preventScroll: true });
   }
+  lightboxOpener = null;
 }
 
 function nextLightbox() {
@@ -340,20 +459,50 @@ function prevLightbox() {
 function renderLightboxSlide() {
   const content = document.getElementById('lightbox-content');
   const counter = document.getElementById('lightbox-counter');
-  
+
   const m = lightboxData[lightboxIndex];
   if (m.type === 'video') {
     if (m.url.startsWith('images/') || m.url.endsWith('.mp4') || m.url.endsWith('.webm')) {
       content.innerHTML = `<video src="${m.url}" style="max-width:100%; max-height:100%;" controls autoplay loop playsinline></video>`;
     } else {
       const embedUrl = formatEmbedUrl(m.url);
-      content.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+      content.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" title="Media ${lightboxIndex + 1}" allowfullscreen></iframe>`;
     }
   } else {
-    content.innerHTML = `<img src="${m.url}" alt="Lightbox media" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+    content.innerHTML = `<img src="${m.url}" alt="Media ${lightboxIndex + 1} of ${lightboxData.length}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
   }
-  
+
   if (counter) counter.textContent = `${pad(lightboxIndex + 1)} / ${pad(lightboxData.length)}`;
+}
+
+function initLightboxGestures() {
+  const lb = document.getElementById('lightbox');
+  if (!lb) return;
+
+  // Clicking the backdrop (but not the media or the buttons) closes
+  lb.addEventListener('click', e => {
+    if (e.target === lb || e.target.id === 'lightbox-content') closeLightbox();
+  });
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  lb.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+
+  lb.addEventListener('touchend', e => {
+    if (!tracking) return;
+    tracking = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx > 0) prevLightbox();
+    else nextLightbox();
+  });
 }
 
 /**
@@ -397,7 +546,10 @@ function applyTheme(theme) {
   localStorage.setItem('portfolio-theme', theme);
 
   const btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = theme === 'dark' ? '○' : '●';
+  if (btn) {
+    btn.textContent = theme === 'dark' ? '○' : '●';
+    btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
 }
 
 /* ─────────────────────────────────────────
@@ -413,6 +565,7 @@ document.addEventListener('keydown', e => {
     } else if (getHash() !== 'main') {
       window.location.hash = 'main';
     }
+    return;
   }
 
   if (lbOpen) {
@@ -437,6 +590,7 @@ function init() {
   renderSocialLinks();
   applyContentMargin();
   applyMOLabel();
+  initLightboxGestures();
 
   // Apply Favicon
   if (SITE_CONFIG.favicon) {
@@ -456,6 +610,8 @@ function init() {
   if (lbClose) lbClose.addEventListener('click', closeLightbox);
   if (lbPrev) lbPrev.addEventListener('click', prevLightbox);
   if (lbNext) lbNext.addEventListener('click', nextLightbox);
+
+  document.querySelectorAll('.view:not(#view-main)').forEach(observeReveals);
 }
 
 document.addEventListener('DOMContentLoaded', init);
