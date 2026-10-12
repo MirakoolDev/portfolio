@@ -445,6 +445,21 @@ iframe {
   line-height: 1.85;
 }
 
+/* Proof links sit inside the traits — visible, but they don't shout */
+.about-traits a {
+  color: var(--text-primary);
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 1px;
+  transition: opacity 0.25s ease;
+}
+
+.about-traits a:hover {
+  opacity: 0.55;
+}
+
 .about-roles {
   display: flex;
   flex-direction: column;
