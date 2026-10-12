@@ -103,7 +103,7 @@ app.delete('/api/images/:filename', (req, res) => {
 
 // -------------- DATA.JS (projects) --------------
 app.get('/api/data', (req, res) => {
-  if (!fs.existsSync(DATA_FILE)) return res.json({ art: [], design: [], experiments: [] });
+  if (!fs.existsSync(DATA_FILE)) return res.json({ art: [], design: [], builds: [] });
   try {
     let content = fs.readFileSync(DATA_FILE, 'utf8');
     const match = content.match(/window\.PROJECTS\s*=\s*(\{[\s\S]*\});?\s*$/);

@@ -21,8 +21,8 @@ window.SITE_CONFIG = {
       "image": "images/1778685581971-checks-spaces_-resize.png"
     },
     {
-      "label": "EXPERIMENTS",
-      "hash": "experiments",
+      "label": "BUILDS",
+      "hash": "builds",
       "image": "images/1778710051865-11.webp"
     },
     {
@@ -70,7 +70,7 @@ window.PROJECTS = {
     {
       "id": "d+d",
       "title": "desolation and disturbances",
-      "desc": "(Almost a loop animation)\n\n3840×1600\n\n30 fps\n\nThis loop is a recording a virtual cameraman makes in a surreal terrain. The content of this footage is open to interpretation.\n\nMusic by Rere.\n\nCreated with Blender.",
+      "desc": "(Almost a loop animation)\n\n3840\u00d71600\n\n30 fps\n\nThis loop is a recording a virtual cameraman makes in a surreal terrain. The content of this footage is open to interpretation.\n\nMusic by Rere.\n\nCreated with Blender.",
       "link": "https://opensea.io/item/ethereum/0xa37da44dcaeba7776e9b8c12f14dbb0291e60387/2",
       "media": [
         {
@@ -238,7 +238,7 @@ window.PROJECTS = {
     {
       "id": "the-unseen-bridge",
       "title": "the unseen bridge",
-      "desc": "Recently this year I was commissioned by Deutsche Gesellschaft für Internationale Zusammenarbeit GmbH(GIZ) to create digital art for Afrilabs annual gathering, Oct 2023.\nThe idea is to involve the public/intended audience through participation, rather than considering them as passive viewers of the artwork. The public/intended audience should become a co-author of the work, to increase the artwork’s connection to local identity as well as raising greater public support.",
+      "desc": "Recently this year I was commissioned by Deutsche Gesellschaft f\u00fcr Internationale Zusammenarbeit GmbH(GIZ) to create digital art for Afrilabs annual gathering, Oct 2023.\nThe idea is to involve the public/intended audience through participation, rather than considering them as passive viewers of the artwork. The public/intended audience should become a co-author of the work, to increase the artwork\u2019s connection to local identity as well as raising greater public support.",
       "link": "https://www.behance.net/gallery/185978129/The-Unseen-Bridge",
       "media": [
         {
@@ -364,7 +364,7 @@ window.PROJECTS = {
     {
       "id": "indoor-nav",
       "title": "Indoor Navigation at Bournemouth Uni",
-      "desc": "I developed an indoor navigation app with Samuel Ubani using Unity and the Vuforia engine, designed to help people find their way in large public spaces like university campuses, malls, airports, and hospitals.\n\nIn this video, we showcase a demo of our of the prototype, which we've built for and tested in a school environment (Bournemouth University) to demonstrate its functionality and potential.\n\nHow It Works:\nImage Recognition 📸: The app uses Vuforia Engine to recognize specific images or markers in the environment, helping to determine the user's location.\nPathfinding 🧭: Unity's AI Navigation component to calculates the best route to the destination, guiding users with clear, easy-to-follow directions.\n\nWhy It's Great:\nUser-Friendly: Anyone can use the app to navigate complex spaces without getting lost.\nAccessibility: It's a helpful tool for everyone, including people with disabilities.\nEfficient: Reduces the need for physical signs and helps manage visitor flow bette",
+      "desc": "I developed an indoor navigation app with Samuel Ubani using Unity and the Vuforia engine, designed to help people find their way in large public spaces like university campuses, malls, airports, and hospitals.\n\nIn this video, we showcase a demo of our of the prototype, which we've built for and tested in a school environment (Bournemouth University) to demonstrate its functionality and potential.\n\nHow It Works:\nImage Recognition \ud83d\udcf8: The app uses Vuforia Engine to recognize specific images or markers in the environment, helping to determine the user's location.\nPathfinding \ud83e\udded: Unity's AI Navigation component to calculates the best route to the destination, guiding users with clear, easy-to-follow directions.\n\nWhy It's Great:\nUser-Friendly: Anyone can use the app to navigate complex spaces without getting lost.\nAccessibility: It's a helpful tool for everyone, including people with disabilities.\nEfficient: Reduces the need for physical signs and helps manage visitor flow bette",
       "link": null,
       "media": [
         {
@@ -426,12 +426,12 @@ window.PROJECTS = {
       ]
     }
   ],
-  "experiments": [
+  "builds": [
     {
       "id": "pfwa",
       "title": "PFWA",
       "link": "https://pfwa.fun",
-      "desc": "A permissionless prediction market. Anyone can create and trade markets on token price, market cap, onchain TVL and fees, real-world assets, or a trader's PnL — 128 markets live, settled from chain data. Built on Robinhood Chain and HyperEVM.",
+      "desc": "A permissionless prediction market. Anyone can create and trade markets on token price, market cap, onchain TVL and fees, real-world assets, or a trader's PnL \u2014 128 markets live, settled from chain data. Built on Robinhood Chain and HyperEVM.",
       "media": [
         {
           "type": "image",

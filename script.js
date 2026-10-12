@@ -144,12 +144,22 @@ function observeVideos(root) {
 /* ─────────────────────────────────────────
    Router
    ───────────────────────────────────────── */
+// Views that have been renamed — old links should still land somewhere
+const LEGACY_HASHES = { experiments: 'builds' };
+
 function getHash() {
-  return window.location.hash.replace('#', '') || 'main';
+  const raw = window.location.hash.replace('#', '') || 'main';
+  return LEGACY_HASHES[raw] || raw;
 }
 
 function route() {
   const target = getHash();
+
+  // Quietly bring a legacy URL up to date (replaceState won't re-fire route)
+  const raw = window.location.hash.replace('#', '');
+  if (raw && LEGACY_HASHES[raw] && window.history.replaceState) {
+    window.history.replaceState(null, '', `#${target}`);
+  }
 
   document.querySelectorAll('.view').forEach(view => {
     const matches = view.dataset.view === target;

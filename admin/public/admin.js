@@ -4,7 +4,7 @@
 'use strict';
 
 // ─── State ───────────────────────────────────────────────────────────────────
-let projectsData = { art: [], design: [], experiments: [] };
+let projectsData = { art: [], design: [], builds: [] };
 let currentCat   = 'art';
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ async function loadProjects() {
     projectsData = await fetchJSON('/api/data');
     renderCat('art');
     renderCat('design');
-    renderCat('experiments');
+    renderCat('builds');
   } catch(e) { notify('Failed to load projects: ' + e.message, true); }
 }
 
@@ -195,8 +195,8 @@ function addProject() {
 }
 
 function collectProjects() {
-  const result = { art: [], design: [], experiments: [] };
-  ['art','design','experiments'].forEach(cat => {
+  const result = { art: [], design: [], builds: [] };
+  ['art','design','builds'].forEach(cat => {
     document.querySelectorAll(`#projects-${cat} .project-card`).forEach(card => {
       const media = [...card.querySelectorAll('.media-row')].map(row => ({
         type: row.querySelector('.media-type').value,
