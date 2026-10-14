@@ -40,7 +40,7 @@
   /* Layout rhythm — one left rail for everything */
   --gutter: clamp(20px, 4.5vw, 56px);
   --rail: calc(var(--gutter) + var(--admin-margin, 0px));
-  --content-max: 1180px;
+  --content-max: 1560px;
   --carousel-gap: 20px;
 }
 
@@ -522,7 +522,7 @@ iframe {
 }
 
 .project-header {
-  padding: 26px 0 4px 0;
+  padding: 22px 0 2px 0;
 }
 
 /* Title and its expand control sit together, not at opposite ends of the column */
@@ -616,8 +616,16 @@ a.project-title-link:hover::after {
   opacity: 1;
 }
 
+.project-toggle svg {
+  display: block;
+  transition: transform 0.4s var(--ease-soft);
+}
+
+.project-toggle.is-open svg {
+  transform: rotate(180deg);
+}
+
 .project-toggle.is-open {
-  transform: rotate(45deg);
   opacity: 0.35;
 }
 
@@ -649,7 +657,7 @@ a.project-title-link:hover::after {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 28px 0 10px 0;
+  padding: 18px 0 8px 0;
 }
 
 .carousel-viewport {
@@ -712,6 +720,36 @@ a.project-title-link:hover::after {
   justify-content: center;
   gap: 10px;
   cursor: zoom-in;
+  background-size: cover;
+  background-position: center;
+}
+
+/* While an image loads, its blurred placeholder shows through and a
+   shimmer sweeps across, so a heavy frame never looks like a dead box. */
+.carousel-slide.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.07),
+    transparent
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+/* Only animate for projects actually scrolled into view — a long page
+   would otherwise run a dozen infinite animations offscreen. */
+.reveal.is-visible .carousel-slide.is-loading::after {
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .carousel-slide img,
@@ -786,7 +824,31 @@ a.project-title-link:hover::after {
 }
 
 .carousel-meta {
-  padding: 6px 0 36px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0 30px 0;
+}
+
+.carousel-progress {
+  position: relative;
+  flex: 1;
+  max-width: 180px;
+  height: 2px;
+  background-color: var(--hairline);
+  overflow: hidden;
+}
+
+.carousel-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  background-color: var(--text-secondary);
+  transition:
+    left 0.25s var(--ease),
+    width 0.25s var(--ease);
 }
 
 .carousel-counter {
@@ -1093,12 +1155,18 @@ a.project-title-link:hover::after {
     bottom: 26px;
   }
 
+  /* The next frame peeks in — the clearest way to say "this swipes" */
   .carousel-viewport {
+    grid-auto-columns: 86%;
+  }
+
+  .carousel-wrap.is-single .carousel-viewport,
+  .carousel-wrap.is-wide .carousel-viewport {
     grid-auto-columns: 100%;
   }
 
-  .carousel-wrap.is-single .carousel-viewport {
-    grid-auto-columns: 100%;
+  .carousel-progress {
+    max-width: none;
   }
 
   .carousel-wrap {

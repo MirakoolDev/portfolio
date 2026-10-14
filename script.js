@@ -14,6 +14,63 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 document.documentElement.classList.add('js');
 
 /* ─────────────────────────────────────────
+   Image manifest — responsive WebP derivatives built by
+   tools/optimize-images.js. Anything missing falls back to its original,
+   so images added through the admin keep working until it's re-run.
+   ───────────────────────────────────────── */
+let MEDIA = {};
+
+// Slides are ~85vw on phones, a third of the column on desktop
+const IMG_SIZES = '(max-width: 680px) 86vw, (max-width: 1100px) 46vw, 31vw';
+
+async function loadMediaManifest() {
+  try {
+    const res = await fetch('images/manifest.json');
+    if (res.ok) MEDIA = await res.json();
+  } catch (e) {
+    // Offline or opened from file:// — originals still render
+  }
+}
+
+/** <img> markup: responsive sources plus a blurred placeholder while it loads. */
+function buildImg(url, alt, loading) {
+  const m = MEDIA[url];
+  if (!m || !m.src) {
+    return `<img src="${url}" alt="${alt}" loading="${loading}" decoding="async">`;
+  }
+  const widths = Object.keys(m.src).map(Number).sort((a, b) => a - b);
+  const srcset = widths.map(w => `${m.src[w]} ${w}w`).join(', ');
+  return `<img src="${m.src[widths[0]]}" srcset="${srcset}" sizes="${IMG_SIZES}"` +
+         ` alt="${alt}" loading="${loading}" decoding="async">`;
+}
+
+/** Nav previews render at ~82px, so they only ever need the smallest tier. */
+function buildThumb(url, alt) {
+  const m = MEDIA[url];
+  if (!m || !m.src) {
+    return `<img src="${url}" alt="${alt}" loading="eager" decoding="async">`;
+  }
+  const widths = Object.keys(m.src).map(Number).sort((a, b) => a - b);
+  const srcset = widths.slice(0, 2).map(w => `${m.src[w]} ${w}w`).join(', ');
+  return `<img src="${m.src[widths[0]]}" srcset="${srcset}" sizes="96px"` +
+         ` alt="${alt}" loading="eager" decoding="async">`;
+}
+
+/** Largest derivative for the lightbox, falling back to the original file. */
+function fullSrc(url) {
+  const m = MEDIA[url];
+  if (!m || !m.src) return url;
+  const widths = Object.keys(m.src).map(Number).sort((a, b) => b - a);
+  return m.src[widths[0]] || url;
+}
+
+/** The blur-up placeholder, as an inline style for the slide behind the image. */
+function lqipStyle(url) {
+  const m = MEDIA[url];
+  return m && m.lqip ? ` style="background-image:url('${m.lqip}')"` : '';
+}
+
+/* ─────────────────────────────────────────
    Lightbox State
    ───────────────────────────────────────── */
 let lightboxData = [];
@@ -31,7 +88,7 @@ function renderNav() {
   nav.innerHTML = items.map((item, i) => {
     // Only show the image box when an image URL is actually set
     const imgHTML = item.image
-      ? `<div class="nav-preview"><img src="${item.image}" alt="${item.label} preview" loading="eager" decoding="async"></div>`
+      ? `<div class="nav-preview">${buildThumb(item.image, `${item.label} preview`)}</div>`
       : '';
     return `
       <a href="#${item.hash}" class="nav-link${item.image ? ' nav-link--has-image' : ''}" id="nav-${item.hash}" style="--i:${i}">
@@ -106,6 +163,23 @@ function observeReveals(root) {
   items.forEach((el, i) => {
     el.style.setProperty('--d', `${Math.min(i, 5) * 70}ms`);
     obs.observe(el);
+  });
+
+  // Safety net: the observer is throttled in background tabs and can be slow
+  // on weak devices. Anything already on screen gets shown regardless, so the
+  // page can never sit blank waiting for a callback. Items further down keep
+  // their scroll animation.
+  const rescue = () => {
+    items.forEach(el => {
+      if (el.classList.contains('is-visible')) return;
+      if (el.getBoundingClientRect().top < window.innerHeight * 1.15) {
+        el.classList.add('is-visible');
+      }
+    });
+  };
+  setTimeout(rescue, 1200);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') setTimeout(rescue, 250);
   });
 }
 
@@ -200,14 +274,19 @@ function renderProjectList(category) {
   observeReveals(container);
 }
 
-/** Fade media in once the bytes have actually arrived. */
+/** Fade media in once the bytes have actually arrived, and drop the placeholder. */
 function markWhenLoaded(img) {
-  if (img.complete && img.naturalWidth > 0) {
+  const done = () => {
     img.classList.add('is-loaded');
+    const slide = img.closest('.carousel-slide');
+    if (slide) slide.classList.remove('is-loading');
+  };
+  if (img.complete && img.naturalWidth > 0) {
+    done();
     return;
   }
-  img.addEventListener('load', () => img.classList.add('is-loaded'), { once: true });
-  img.addEventListener('error', () => img.classList.add('is-loaded'), { once: true });
+  img.addEventListener('load', done, { once: true });
+  img.addEventListener('error', done, { once: true });
 }
 
 function buildProjectItem(p, projectIndex) {
@@ -237,7 +316,7 @@ function buildProjectItem(p, projectIndex) {
          const embedUrl = formatEmbedUrl(m.url);
          return `<div class="carousel-slide is-embed" role="figure" data-pid="${p.id}" data-index="${i}"><iframe src="${embedUrl}" title="${p.title}" loading="lazy" allowfullscreen></iframe></div>`;
       }
-      return `<div class="carousel-slide" role="figure" data-pid="${p.id}" data-index="${i}"><img src="${m.url}" alt="${p.title}" loading="${loading}" decoding="async"></div>`;
+      return `<div class="carousel-slide is-loading" role="figure" data-pid="${p.id}" data-index="${i}"${lqipStyle(m.url)}>${buildImg(m.url, p.title, loading)}</div>`;
     }
     return `
       <div class="carousel-slide" role="img" aria-label="Image ${i + 1} of ${slideCount}">
@@ -261,7 +340,7 @@ function buildProjectItem(p, projectIndex) {
             data-pid="${p.id}"
             aria-expanded="true"
             aria-controls="expand-${p.id}"
-            aria-label="Collapse ${p.title}">+</button>
+            aria-label="Collapse ${p.title}"><svg width="11" height="7" viewBox="0 0 11 7" fill="none" aria-hidden="true"><path d="M1 5.5 5.5 1 10 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         ${description}
       </div>
@@ -275,6 +354,7 @@ function buildProjectItem(p, projectIndex) {
           </div>
           <div class="carousel-meta${isSingle ? ' is-single-meta' : ''}">
             <span class="carousel-counter" id="counter-${p.id}" aria-live="polite">${pad(1)} / ${pad(slideCount)}</span>
+            <div class="carousel-progress" aria-hidden="true"><span class="carousel-progress-fill" id="prog-${p.id}"></span></div>
           </div>
         </div>
       </div>
@@ -294,6 +374,7 @@ function initCarousel(vp) {
   const wrap    = vp.closest('.carousel-wrap');
   const prevBtn = wrap && wrap.querySelector('[data-dir="prev"]');
   const nextBtn = wrap && wrap.querySelector('[data-dir="next"]');
+  const prog    = document.getElementById(`prog-${pid}`);
   const total   = vp.children.length;
 
   let ticking = false;
@@ -308,6 +389,15 @@ function initCarousel(vp) {
     if (counter) counter.textContent = `${pad(Math.min(index + 1, total))} / ${pad(total)}`;
     if (prevBtn) prevBtn.disabled = atStart;
     if (nextBtn) nextBtn.disabled = atEnd;
+
+    if (prog) {
+      // Thumb width shows how much fits, position shows how far along
+      const ratio    = vp.clientWidth / vp.scrollWidth;
+      const scrolled = vp.scrollWidth - vp.clientWidth;
+      const pct      = scrolled > 0 ? vp.scrollLeft / scrolled : 0;
+      prog.style.width = `${Math.min(ratio, 1) * 100}%`;
+      prog.style.left  = `${pct * (1 - ratio) * 100}%`;
+    }
   };
 
   vp.addEventListener('scroll', () => {
@@ -479,7 +569,7 @@ function renderLightboxSlide() {
       content.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" title="Media ${lightboxIndex + 1}" allowfullscreen></iframe>`;
     }
   } else {
-    content.innerHTML = `<img src="${m.url}" alt="Media ${lightboxIndex + 1} of ${lightboxData.length}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+    content.innerHTML = `<img src="${fullSrc(m.url)}" alt="Media ${lightboxIndex + 1} of ${lightboxData.length}" style="max-width:100%; max-height:100%; object-fit:contain;">`;
   }
 
   if (counter) counter.textContent = `${pad(lightboxIndex + 1)} / ${pad(lightboxData.length)}`;
@@ -594,8 +684,9 @@ function applyMOLabel() {
   btn.textContent = label;
 }
 
-function init() {
+async function init() {
   initTheme();
+  await loadMediaManifest();
   renderNav();
   renderSocialLinks();
   applyContentMargin();
