@@ -34,6 +34,7 @@ window.SITE_CONFIG = {
   "socials": {
     "twitter": "https://x.com/MiracleOtugo",
     "linkedin": "https://www.linkedin.com/in/miracleotugo/",
+    "github": "https://github.com/MirakoolDev",
     "instagram": "instagram.com/black.poser"
   },
   "favicon": "images/1778881176487-blackposer.webp",
@@ -364,7 +365,7 @@ window.PROJECTS = {
     {
       "id": "indoor-nav",
       "title": "Indoor Navigation at Bournemouth Uni",
-      "desc": "I developed an indoor navigation app with Samuel Ubani using Unity and the Vuforia engine, designed to help people find their way in large public spaces like university campuses, malls, airports, and hospitals.\n\nIn this video, we showcase a demo of our of the prototype, which we've built for and tested in a school environment (Bournemouth University) to demonstrate its functionality and potential.\n\nHow It Works:\nImage Recognition \ud83d\udcf8: The app uses Vuforia Engine to recognize specific images or markers in the environment, helping to determine the user's location.\nPathfinding \ud83e\udded: Unity's AI Navigation component to calculates the best route to the destination, guiding users with clear, easy-to-follow directions.\n\nWhy It's Great:\nUser-Friendly: Anyone can use the app to navigate complex spaces without getting lost.\nAccessibility: It's a helpful tool for everyone, including people with disabilities.\nEfficient: Reduces the need for physical signs and helps manage visitor flow bette",
+      "desc": "I developed an indoor navigation app with Samuel Ubani using Unity and the Vuforia engine, designed to help people find their way in large public spaces like university campuses, malls, airports, and hospitals.\n\nIn this video, we showcase a demo of our prototype, which we've built for and tested in a school environment (Bournemouth University) to demonstrate its functionality and potential.\n\nHow It Works:\nImage Recognition \ud83d\udcf8: The app uses Vuforia Engine to recognize specific images or markers in the environment, helping to determine the user's location.\nPathfinding \ud83e\udded: Unity's AI Navigation component calculates the best route to the destination, guiding users with clear, easy-to-follow directions.\n\nWhy It's Great:\nUser-Friendly: Anyone can use the app to navigate complex spaces without getting lost.\nAccessibility: It's a helpful tool for everyone, including people with disabilities.\nEfficient: Reduces the need for physical signs and helps manage visitor flow better.",
       "link": null,
       "media": [
         {
@@ -478,8 +479,8 @@ window.PROJECTS = {
     {
       "id": "ham",
       "title": "Home's a Maze",
-      "desc": "HAM is a daily 3D maze game, solve a new maze everyday",
-      "link": "https://basement.fun/games/ham3d",
+      "desc": "A daily 3D maze game: one new maze every day, the same for everyone. Built solo in Unity, with on-chain minting of each run as a Polaroid-style NFT. 127k plays, 1.5k on-chain interactions, 600+ unique active wallets and 450 hours played.",
+      "link": "https://ham3d.fun",
       "media": [
         {
           "type": "video",

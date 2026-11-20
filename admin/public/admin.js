@@ -504,6 +504,7 @@ async function loadHomepage() {
     document.getElementById('input-twitter').value   = (data.socials || {}).twitter   || '';
     document.getElementById('input-linkedin').value  = (data.socials || {}).linkedin  || '';
     document.getElementById('input-instagram').value = (data.socials || {}).instagram || '';
+    document.getElementById('input-github').value    = (data.socials || {}).github    || '';
     document.getElementById('input-favicon').value   = data.favicon || '';
 
     const margin = typeof data.contentMarginLeft === 'number' ? data.contentMarginLeft : 48;
@@ -526,7 +527,8 @@ async function saveHomepage() {
   const socials = {
     twitter:   document.getElementById('input-twitter').value.trim(),
     linkedin:  document.getElementById('input-linkedin').value.trim(),
-    instagram: document.getElementById('input-instagram').value.trim()
+    instagram: document.getElementById('input-instagram').value.trim(),
+    github:    document.getElementById('input-github').value.trim()
   };
   const favicon = document.getElementById('input-favicon').value.trim();
 
